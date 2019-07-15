@@ -36,7 +36,12 @@ mongoose.connect(MONGODB_URI)
 // Routes
 
 // 1. a GET route to scrape website
-
+app.get("/scrape", function (req, res) {
+  axios.get("https://www.huffpost.com/").then(function (response) {
+    var $ = cheerio.load(response.data);
+    
+  })
+})
 // 2. a GET route to retrieve all articles
 
 // 3. a GET route for grabbing a specific article by id, populate with it's comment
