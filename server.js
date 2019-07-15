@@ -1,17 +1,17 @@
-var express = require("express");
-var logger = require("morgan");
-var mongoose = require("mongoose");
+const express = require("express");
+const logger = require("morgan");
+const mongoose = require("mongoose");
 
 // Scraping tools
-var axios = require("axios");
-var cheerio = require("cheerio");
+const axios = require("axios");
+const cheerio = require("cheerio");
 
 // require all models
-var db = require("./models");
+const db = require("./models");
 
-var PORT = 3000;
+const PORT = 3000;
 // Initialize express
-var app = express();
+const app = express();
 
 // Configure Middleware
 // use morgan logger for logging requests
@@ -23,13 +23,13 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Set Handlebars.
-var exphbs = require("express-handlebars");
+const exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 mongoose.connect(MONGODB_URI)
 
