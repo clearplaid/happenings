@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const path = require("path");
 
 // Scraping tools
 const axios = require("axios");
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Set Handlebars.
-const exphbs = require("express-handlebars");
+var exphbs = require("express-handlebars");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
@@ -31,28 +32,30 @@ app.set("view engine", "handlebars");
 // connect to Mongo DB
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 
 // 1. a GET route to scrape website
 app.get("/scrape", function (req, res) {
-  axios.get("https://slashdot.org/").then(function (response) {
+  axios.get("https://www.huffpost.com/").then(function (response) {
     console.log(response.data);
     var $ = cheerio.load(response.data);
+    var articleTitles = [];
+
     // Now, we grab every h2 within an article tag, and do the following:
-    $("article").each(function(i, element) {
+    $(".card__content").each(function(i, element) {
       // Save an empty result object
       var result = {};
       // Add the scraped info wanted, and save them as properties of the result object
       result.title = $(this)
-      .children("h2")
+      .find(".card__headline__text")
       .text();
       result.link = $(this)
-      .children("a")
+      .find("a.card__link")
       .attr("href");
       result.summary = $(this)
-      .children("i")
+      .find("a")
       .text();
 
 
@@ -79,7 +82,7 @@ app.get("/articles", function(req, res) {
   // If all Articles are successfully found, send them back to the client
   db.Article.find({})
   .then(function(data) {
-    res,json(data);
+    res.json(data);
   })
   .catch(function(err) {
     // If an error occurs, send the error back to the client
@@ -105,9 +108,7 @@ app.post("/articles/:id", function(req, res) {
       _id: req.params.id
     },
     {
-      $push: {
-        comment: data._id
-      }
+      comment: dbComment._id
     },
     {
       new: true
