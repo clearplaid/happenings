@@ -18,7 +18,6 @@ const ArticleSchema = new Schema({
     type: String, // check and see if there is a long string option
     required: true
   },
-// Feel free to add more content to your database (photos, bylines, and so on)
 
   // The ref property links the ObjectId to the Comment model
   // This allows us to populate the Article with an associated comment
