@@ -1,11 +1,25 @@
+<div>
+  <h2 class="text-center">Check What's Happening at Slashdot</h2>
+</div>
 
-{{#each articles}}
-<div class="card" style="width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title">{{this.title}}</h5>
-    <p class="card-text">{{this.summary}}</p>
-    <a href="{{this.link}}" class="card-link">Original Article</a>
-    <a href="#" class="card-link">Delete Article</a>
+<div class="row"></div>
+  <div class="">
+    <div id="articles">
+      {{#each article}}
+      <div class="card" id="{{this._id}}">
+        <div class="card-body">
+          <h4 class="card-title"><strong>{{this.title}}</strong></h4>
+          <a href="/article/{{this._id}}" class="card-link">Read</a>
+        </div>
+      </div>
+    {{/each}}
+    </div>
   </div>
 </div>
-{{/each}}
+
+
+
+
+
+
+

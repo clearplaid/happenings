@@ -30,14 +30,24 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://@ds351455.mlab.com:51455/heroku_8zm5ld8s";
-
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+// "mongodb://@ds351455.mlab.com:51455/heroku_8zm5ld8s"
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 //  a GET to display main page
 app.get("/", function (req, res) {
-  res.render("index")
+  db.Article.find({}).sort({_id: -1})
+    .then(function (data) {
+    var article = {article: data}
+    
+    console.log("article: " + article)
+    res.render("index", article)
+  })
+  .catch(function(err) {
+    // If an error occurs, send the error back to the client
+    res.json(err);
+  });
 })
 
 //  a GET route to scrape website
@@ -47,51 +57,70 @@ app.get("/scrape", function (req, res) {
     var $ = cheerio.load(response.data);
     var articleTitles = [];
 
-    // Now, we grab every h2 within an article tag, and do the following:
-    $("article").each(function(i, element) {
+    // Now, we grab every article and do the following:
+    $("article").each(function (i, element) {
       // Save an empty result object
       var result = {};
       // Add the scraped info wanted, and save them as properties of the result object
       result.title = $(this)
-      .find("h2 a")
-      .text();
+        .find("h2 a")
+        .text();
       result.link = $(this)
-      .find("h2 a")
-      .attr("href");
+        .find("h2 a")
+        .attr("href");
       result.summary = $(this)
-      .find(".body i")
-      .text();
+        .find(".body i")
+        .text();
 
+      if (result.title === "" && result.link === "") {
+        console.log("Incomplete Data");
+      } else {
 
-      console.log("result: " + JSON.stringify(result));
-      // Create a new Article using the `result` object built from scraping
-      db.Article.create(result)
-      .then(function(dbArticle) {
-        // View the added result in the console
-        console.log(dbArticle);
-      })
-      .catch(function(err) {
-        // If an error occurred, log it
-        console.log(err);
-      });
-  });
+        articleTitles.push(result.title);
+        for (let i = 0; i < articleTitles.length; i++) {
+          currentTitle = articleTitles[i];
 
-  // Send a message to the client
-  res.send("index", {articles: result});
+          if (currentTitle === articleTitles[i]) {
+            console.log("Title Already Exists")
+          } else {
+            db.Article.create(result)
+              .then(function (data) {
+                // View the added result in the console
+                console.log(data);
+                var results = {
+                  article: data
+                }
+                console.log("results: " + results)
+                res.render("index", results)
+              })
+              .catch(function (err) {
+                // If an error occurred, log it
+                console.log(err);
+              });
+            // Send a message to the client
+            console.log("Scrape Complete");
 
-  });
+          }
+        }
+      }
+    })
+  })
 })
+
 //  a GET route to retrieve all articles
 app.get("/articles", function(req, res) {
   // If all Articles are successfully found, send them back to the client
-  db.Article.find({})
-  .then(function(data) {
+  db.Article.find({}).sort({_id: -1})
+    .then(function (data) {
+    var article = {article: data}
     res.json(data);
+    console.log("data: " + data)
   })
   .catch(function(err) {
     // If an error occurs, send the error back to the client
     res.json(err);
   });
+  
 })
 //  a GET route for grabbing a specific article by id, populate with it's comment
 app.get("/articles/:id", function(req, res) {

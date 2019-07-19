@@ -1,28 +1,39 @@
-<div id="articles"></div>
-
-<div id="comments">
-
+<div class="row">
+  <div class="card ">
+    <div class="card-header">
+      <h2 class="card-title">{{article.title}}</h2>
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{article.summary}}</p>
+      <a href="{{article.link}}" class="btn btn-warning">Original Article</a>
+    </div>
+    <div class="card-footer text-muted">
+      <form action="/comment/{{article._id}}" method="POST" class="formInput">
+        <div class="form-group">
+          <input type="text" class="form-control" id="nameInput" placeholder="Name">
+        </div>
+        <div class="form-group">
+          <textarea class="form-control" id="bodyInput" rows="3" placeholder="Leave Comment Here">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-info">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
-
-<div class="card text-center">
-  <div class="card-header">
-    <h5 class="card-title">{{article.title}}</h5>
-  </div>
-  <div class="card-body">
-    <p class="card-text">{{article.summary}}</p>
-    <a href="{{article.link}}" class="btn btn-warning">See original article</a>
-  </div>
-  <div class="card-footer text-muted">
-    <form action="/comment/{{article._id}}" method="POST" class="formInput">
-      <div class="form-group">
-        <input type="text" class="form-control" id="nameInput" placeholder="Name">
-      </div>
-      <div class="form-group">
-        <textarea class="form-control" id="bodyInput" rows="3" placeholder="Leave Comment Here">
-      </div>
-    
-    
-    
-    </form>
+<div class="row">
+  <div class="">
+    <h2 class="comments">Comments:</h2>
+    {{#if article.comment}}
+    {{#each article.comment}}
+    <div class="card">
+      <p id="commentTitle">{{title}}</p>
+      <p id="commentBody">{{body}}</p>
+    </div>
+    {{/each}}
+    {{else}}
+    <p>No comments yet but you could leave one!</p>
+    {{/if}}
   </div>
 </div>
