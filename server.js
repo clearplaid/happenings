@@ -30,7 +30,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://<dbuser>:<dbpassword>@ds351455.mlab.com:51455/heroku_8zm5ld8s";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://@ds351455.mlab.com:51455/heroku_8zm5ld8s";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
