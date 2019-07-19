@@ -30,7 +30,8 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://@ds351455.mlab.com:51455/heroku_8zm5ld8s"
+// "mongodb://localhost/mongoHeadlines";
 // "mongodb://@ds351455.mlab.com:51455/heroku_8zm5ld8s"
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
@@ -110,9 +111,8 @@ app.get("/scrape", function (req, res) {
 //  a GET route to retrieve all articles
 app.get("/articles", function(req, res) {
   // If all Articles are successfully found, send them back to the client
-  db.Article.find({}).sort({_id: -1})
+  db.Article.find({})
     .then(function (data) {
-    var article = {article: data}
     res.json(data);
     console.log("data: " + data)
   })
@@ -126,8 +126,11 @@ app.get("/articles", function(req, res) {
 app.get("/articles/:id", function(req, res) {
   db.Article.findOne({_id:req.params.id})
   .populate("comment")
-  .then(function(data) {
-    res.json(data);
+    .then(function (data) {
+      var results = {
+        article: data
+      }
+    res.render("article", results);
   })
   .catch(function(err) {
     res.json(err);
@@ -137,7 +140,7 @@ app.get("/articles/:id", function(req, res) {
 app.post("/articles/:id", function(req, res) {
   db.Comment.create(req.body)
   .then(function(data) {
-    return db.Article.findOneAndUpdate({
+    db.Article.findOneAndUpdate({
       _id: req.params.id
     },
     {
@@ -147,14 +150,29 @@ app.post("/articles/:id", function(req, res) {
       new: true
     });
   })
-  .then(function(data) {
-    res.json(data);
+  .then(function (data) {
+    console.log("comment added successfully");
+    res.reload("article")
   })
   .catch(function(err) {
     res.json(err);
   });
 });
 
+app.get("/delete/:id", function (req, res) {
+  
+  db.Article.remove({
+      _id: req.params.id
+    }
+  )
+  .then(function(data) {
+    console.log("article deleted successfully");
+    res.reload("index")
+  })
+  .catch(function(err) {
+    res.json(err);
+  });
+})
 
 
 // Start the Server

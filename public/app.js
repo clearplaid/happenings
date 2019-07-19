@@ -1,33 +1,10 @@
-$(document).on("click", "div", function() {
-    $("#comments").empty();
-    var thisId = $(this).attr("data-id");
-
-    $.ajax({
-        method: "GET",
-        url: "/articles/" + thisId
-    })
-    .then(function(data) {
-        console.log("data: " + data);
-
-    //     $("#comments").append("<h3>" + data.title + "</h3>");
-    //     $("#comments").append("<input id='titleInput' name='title' >");
-    //     $("#comments").append("<textarea id='bodyInput' name='body'></textarea>");
-    //   // A button to submit a new note, with the id of the article saved to it
-    //   $("#comments").append("<button data-id='" + data._id + "' id='saveComment'>Save Comment</button>");
-
-    //   if(data.comment) {
-    //       $("#titleInput").val(data.comment.title);
-    //       $("#bodyInput").val(data.comment.body);
-    //   }
-    });
-});
-
-$(document).on("click", "#saveComment", function() {
-    var thisId = $(this).attr("data-id");
-
+// submit comments and save to corresponding article
+$(document).on("submit", function () {
+    var selected = $(this).parent("id");
+    console.log("post selected: " + selected)
     $.ajax({
         method: "POST",
-        url: "/articles/" + thisId,
+        url: "/articles/" + selected,
         data: {
             title: $("#titleInput").val(),
             body: $("#bodyInput").val()
@@ -35,9 +12,24 @@ $(document).on("click", "#saveComment", function() {
     })
     .then(function(data) {
         console.log(data);
-        $("#comments").empty();
+        location.reload()
     });
 
     $("#titleInput").val("");
     $("#bodyInput").val("");
 })
+
+// delete article 
+$(".delete-art").on("click", function() {
+    var selected = $(this).attr("id");
+    console.log("selected: " + selected);
+
+    $.ajax({
+        method: "GET",
+        url: "/delete/" + selected
+    })
+    .then(function(data) {
+        console.log("article successfully deleted")
+        location.reload()
+    })
+  })

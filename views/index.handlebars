@@ -9,7 +9,9 @@
       <div class="card" id="{{this._id}}">
         <div class="card-body">
           <h4 class="card-title"><strong>{{this.title}}</strong></h4>
-          <a href="/article/{{this._id}}" class="card-link">Read</a>
+          <a href="/articles/{{this._id}}" id="read-art" class="card-link">Read</a>
+          <a href="/delete/{{this._id}}" id="{{this._id}}"
+           class="card-link delete-art">Delete</a>
         </div>
       </div>
     {{/each}}
