@@ -10,7 +10,7 @@ const cheerio = require("cheerio");
 // require all models
 const db = require("./models");
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 // Initialize express
 const app = express();
 
@@ -30,7 +30,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongolab-encircled-82872";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://<dbuser>:<dbpassword>@ds351455.mlab.com:51455/heroku_8zm5ld8s";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
