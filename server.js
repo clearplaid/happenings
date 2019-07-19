@@ -30,7 +30,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // connect to Mongo DB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongolab-encircled-82872";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
@@ -77,7 +77,7 @@ app.get("/scrape", function (req, res) {
   });
 
   // Send a message to the client
-    res.render("index", { article: dbArticle });
+  res.send("index", {articles: result});
 
   });
 })
