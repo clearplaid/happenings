@@ -35,27 +35,31 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlin
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
+//  a GET to display main page
+app.get("/", function (req, res) {
+  res.render("index")
+})
 
-// 1. a GET route to scrape website
+//  a GET route to scrape website
 app.get("/scrape", function (req, res) {
-  axios.get("https://www.huffpost.com/").then(function (response) {
+  axios.get("https://slashdot.org/").then(function (response) {
     console.log(response.data);
     var $ = cheerio.load(response.data);
     var articleTitles = [];
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $(".card__content").each(function(i, element) {
+    $("article").each(function(i, element) {
       // Save an empty result object
       var result = {};
       // Add the scraped info wanted, and save them as properties of the result object
       result.title = $(this)
-      .find(".card__headline__text")
+      .find("h2 a")
       .text();
       result.link = $(this)
-      .find("a.card__link")
+      .find("h2 a")
       .attr("href");
       result.summary = $(this)
-      .find("a")
+      .find(".body i")
       .text();
 
 
@@ -73,11 +77,11 @@ app.get("/scrape", function (req, res) {
   });
 
   // Send a message to the client
-  res.send("Scrape Complete");
+    res.render("index", { article: dbArticle });
 
   });
 })
-// 2. a GET route to retrieve all articles
+//  a GET route to retrieve all articles
 app.get("/articles", function(req, res) {
   // If all Articles are successfully found, send them back to the client
   db.Article.find({})
@@ -89,7 +93,7 @@ app.get("/articles", function(req, res) {
     res.json(err);
   });
 })
-// 3. a GET route for grabbing a specific article by id, populate with it's comment
+//  a GET route for grabbing a specific article by id, populate with it's comment
 app.get("/articles/:id", function(req, res) {
   db.Article.findOne({_id:req.params.id})
   .populate("comment")
@@ -100,7 +104,7 @@ app.get("/articles/:id", function(req, res) {
     res.json(err);
   })
 })
-// 4. a POST route to save/update an Articles associated comment
+//  a POST route to save/update an Articles associated comment
 app.post("/articles/:id", function(req, res) {
   db.Comment.create(req.body)
   .then(function(data) {
