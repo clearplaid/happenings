@@ -1,22 +1,23 @@
 // submit comments and save to corresponding article
-$(document).on("submit", function () {
-    var selected = $(this).parent("id");
-    console.log("post selected: " + selected)
+$("#saveComment").on("submit", function () {
+    event.preventDefault();
+    var selectedArticle = $(this).parent("id");
+    var comment = {};
+    comment.title = $("#titleInput").val("").trim();
+    comment.body = $("#bodyInput").val("").trim();
+console.log(comment)
     $.ajax({
         method: "POST",
-        url: "/articles/" + selected,
-        data: {
-            title: $("#titleInput").val(),
-            body: $("#bodyInput").val()
-        }
+        url: "/articles/" + selectedArticle,
+        data: comment
     })
     .then(function(data) {
         console.log(data);
         location.reload()
+        $("#titleInput").val("");
+        $("#bodyInput").val("");
     });
 
-    $("#titleInput").val("");
-    $("#bodyInput").val("");
 })
 
 // delete article 
@@ -32,4 +33,22 @@ $(".delete-art").on("click", function() {
         console.log("article successfully deleted")
         location.reload()
     })
-  })
+})
+
+// delete comment 
+$(".delete-comment").on("click", function() {
+    var selectedComment = $(this).attr("data-id");
+    var selectedArticle = $(this).parent("data-id");
+    console.log("selected comment: " + selectedComment);
+    console.log("selected article: " + selectedArticle);
+
+    $.ajax({
+        method: "GET",
+        url: "/comment/delete/" + selectedComment + "/" + selectedArticle,
+    })
+    .then(function(data) {
+        console.log("comment successfully deleted")
+        location.reload()
+    })
+})
+  

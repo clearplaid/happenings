@@ -15,16 +15,16 @@ const ArticleSchema = new Schema({
   },
   // Summary - a short summary of the article
   summary: {
-    type: String, // check and see if there is a long string option
+    type: String, 
     required: true
   },
 
   // The ref property links the ObjectId to the Comment model
   // This allows us to populate the Article with an associated comment
-  comment: {
+  comment: [{
     type: Schema.Types.ObjectId,
     ref: "Comment"
-  }
+  }]
 });
 
 // This creates our model from the above schema, using mongoose's model method
